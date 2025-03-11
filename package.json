@@ -1,0 +1,26 @@
+{
+  "name": "csi_ecosteward",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write src/**/*.js",
+    "fix": "eslint --fix src/**/*.js",
+    "start": "node src/index.js",
+    "test": "mocha tests/*.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "globals": "^16.0.0",
+    "mocha": "^11.1.0",
+    "prettier": "^3.5.3",
+    "typescript-eslint": "^8.26.0"
+  }
+}
