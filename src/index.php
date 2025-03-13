@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,317 +20,7 @@
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
     rel="stylesheet"
   />
-
-  <style>
-    /* =======================
-       VARIABLES & BASE
-    ======================= */
-    :root {
-      --primary: #2E7D32;      /* Vert foncé */
-      --primary-dark: #1D5A25; /* Teinte plus sombre pour gradient */
-      --secondary: #8BC34A;    /* Vert clair */
-      --secondary-dark: #6FAE3A;
-      --background: #F5F5F5;   /* Gris très clair */
-      --text: #212121;         /* Texte principal */
-      --transition: 0.3s;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0; 
-      padding: 0;
-    }
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: var(--background);
-      color: var(--text);
-      line-height: 1.5;
-    }
-    h1, h2, h3 {
-      margin-bottom: 0.5rem;
-    }
-    ul, li {
-      list-style: none;
-    }
-    button, a {
-      cursor: pointer;
-    }
-
-    /* =======================
-       LAYOUT PRINCIPAL
-    ======================= */
-    .app-container {
-      display: grid;
-      grid-template-columns: 250px 1fr;
-      min-height: 100vh;
-    }
-
-    /* =======================
-       SIDEBAR (NAVIGATION)
-    ======================= */
-    nav.sidebar {
-      background: #fff;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      transition: var(--transition);
-    }
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      padding: 20px;
-      border-bottom: 1px solid #eee;
-    }
-    .logo-icon {
-      position: relative;
-      width: 50px;
-      height: 50px;
-    }
-    /* Bouclier dégradé */
-    .logo-shield {
-      width: 45px;
-      height: 45px;
-      background: linear-gradient(
-        135deg, 
-        var(--primary-dark) 0%, 
-        var(--primary) 50%, 
-        var(--primary-dark) 100%
-      );
-      clip-path: polygon(
-        50% 0%,
-        100% 25%,
-        100% 75%,
-        50% 100%,
-        0% 75%,
-        0% 25%
-      );
-      position: absolute;
-    }
-    /* Feuille dégradée + forme plus raffinée (SVG path) */
-    .logo-leaf {
-      position: absolute;
-      top: 7px;
-      left: 12px;
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(
-        to bottom right, 
-        var(--secondary) 0%, 
-        var(--secondary-dark) 100%
-      );
-      clip-path: path("M15.25 2.74c-0.93-1.59-3.01-2.74-5.25-2.74-3.31 0-6 2.69-6 6 0 6.66 9.44 9.84 9.8 15.99 1.85-3.81 5.75-5.98 5.95-10.58 0.08-1.8-0.49-3.45-1.51-4.67-1.07-1.28-1.31-2.34-1.01-3z");
-    }
-    .logo-text {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-      letter-spacing: -1px;
-    }
-    .logo-text span {
-      color: var(--secondary);
-    }
-
-    .nav-item {
-      padding: 12px 20px;
-      margin: 8px 10px;
-      border-radius: 8px;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .nav-item:hover {
-      background: #E8F5E9;
-    }
-    .nav-item.active {
-      background: #C8E6C9;
-      font-weight: 500;
-    }
-
-    /* =======================
-       MAIN CONTENT
-    ======================= */
-    main {
-      padding: 30px;
-      overflow-y: auto;
-    }
-    section {
-      display: none; /* Par défaut masqué */
-      margin-bottom: 2rem;
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-top: 1rem;
-    }
-    .card {
-      background: #fff;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: var(--transition);
-      margin-bottom: 1rem;
-    }
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-    }
-
-    /* =======================
-       TABLES & CHART
-    ======================= */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 0.75rem;
-    }
-    th, td {
-      padding: 0.75rem;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-    .mini-chart {
-      margin-top: 10px;
-      width: 100%;
-      height: 100px;
-      background: linear-gradient(
-        to right,
-        var(--secondary) 25%,
-        #c0e5a3 25%,
-        #c0e5a3 50%,
-        var(--secondary) 50%,
-        var(--secondary) 75%,
-        #c0e5a3 75%
-      );
-      background-size: 40px 40px;
-      animation: chartAnim 1.5s infinite linear;
-    }
-    @keyframes chartAnim {
-      0% { background-position: 0 0; }
-      100% { background-position: 40px 40px; }
-    }
-    .pie-placeholder {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: conic-gradient(
-        var(--secondary-dark) 0% 40%, 
-        #cccccc 40% 70%,
-        var(--primary) 70% 100%
-      );
-      margin: 10px auto 0 auto;
-    }
-    .progress-ring {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      background:
-        radial-gradient(#fff 58%, transparent 59%),
-        conic-gradient(var(--primary) calc(75 * 3.6deg), #e0e0e0 0);
-      margin: 10px auto 0 auto;
-      position: relative;
-    }
-    .progress-center {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-weight: 700;
-      color: #555;
-    }
-
-    /* =======================
-       FORMS, PLANNING...
-    ======================= */
-    .form-row {
-      margin-bottom: 0.75rem;
-      display: flex;
-      flex-direction: column;
-    }
-    label {
-      font-weight: 500;
-      margin-bottom: 0.3rem;
-    }
-    input, select, textarea {
-      padding: 0.6rem;
-      border: 1px solid #ddd;
-      border-radius: 0.4rem;
-      transition: var(--transition);
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: 2px solid var(--secondary);
-      border-color: var(--secondary);
-    }
-    button {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      transition: var(--transition);
-      font-size: 1rem;
-      margin-top: 0.3rem;
-      align-self: flex-start;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    .planning-grid {
-      display: grid;
-      grid-template-columns: 100px 1fr;
-      gap: 10px;
-      margin-top: 1rem;
-    }
-    .time-slot {
-      padding: 8px;
-      background: #f8f8f8;
-      border-radius: 6px;
-      text-align: center;
-      font-weight: bold;
-    }
-    .task-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .task-item {
-      padding: 10px;
-      background: var(--secondary);
-      border-radius: 6px;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .task-category {
-      font-size: 0.8em;
-      background: rgba(0,0,0,0.1);
-      padding: 3px 6px;
-      border-radius: 4px;
-    }
-
-    /* =======================
-       RESPONSIVE
-    ======================= */
-    @media (max-width: 768px) {
-      .app-container {
-        grid-template-columns: 1fr;
-      }
-      nav.sidebar {
-        flex-direction: row;
-        overflow-x: auto;
-        height: auto;
-      }
-      .nav-item {
-        white-space: nowrap;
-      }
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <div class="app-container">
@@ -350,6 +49,12 @@
       </div>
       <div class="nav-item" data-section="ateliers" tabindex="0">
         🎓 Ateliers
+      </div>
+      <!-- ✅ AJOUTE LE BOUTON DÉCONNEXION ICI -->
+      <div class="logout-container">
+          <form action="pages/logout.php" method="POST">
+              <button type="submit" class="logout-btn">🔓 Déconnexion</button>
+          </form>
       </div>
     </nav>
 
@@ -683,36 +388,6 @@
   </div>
 
   <!-- ===================== JS : NAVIGATION ===================== -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const navItems = document.querySelectorAll('.nav-item');
-      const sections = document.querySelectorAll('main > section');
-
-      function showSection(sectionId) {
-        sections.forEach(sec => sec.style.display = 'none');
-        const target = document.getElementById(sectionId);
-        if (target) target.style.display = 'block';
-      }
-
-      navItems.forEach(item => {
-        item.addEventListener('click', () => {
-          navItems.forEach(n => n.classList.remove('active'));
-          item.classList.add('active');
-          showSection(item.dataset.section);
-        });
-        // Accessibilité clavier
-        item.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            navItems.forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
-            showSection(item.dataset.section);
-          }
-        });
-      });
-
-      // Activer le tableau de bord par défaut
-      showSection('dashboard');
-    });
-  </script>
+  <script src="js/app.js"></script>
 </body>
 </html>
