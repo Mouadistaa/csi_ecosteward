@@ -30,7 +30,7 @@ Tout comportement jugé inapproprié pourra entraîner un avertissement ou une e
 
 Si vous êtes témoin d’un comportement inapproprié, contactez-nous immédiatement :
 
-📧 **Email** : contact@ecosteward.com  
+📧 **Email** : sahraouidoukkalimouad@gmail.com  &  Ayman127361@gmail.com  
 📩 **Issue GitHub** : Ouvrez une issue avec le tag `🚨 Code of Conduct`.
 
 Toutes les plaintes seront examinées avec sérieux et confidentialité.
