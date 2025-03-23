@@ -1,13 +1,21 @@
 <?php
-$host = 'localhost';       // Ou l'hôte de la DB (ex. 127.0.0.1)
-$dbname = 'eco_farm';      // Nom de la base
-$user = 'root';            // Par défaut XAMPP
-$pass = '';                // Par défaut XAMPP
+$host = 'localhost';
+$db   = 'eco_farm';
+$user = 'root';
+$pass = ''; // vide par défaut sous XAMPP
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+];
 
 try {
-  $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
-  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (PDOException $e) {
-  die("Erreur de connexion : " . $e->getMessage());
+    echo "Erreur de connexion à la base : " . $e->getMessage();
+    exit;
 }
 ?>

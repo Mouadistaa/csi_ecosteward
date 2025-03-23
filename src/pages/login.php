@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 $pdo = new PDO('mysql:host=localhost;dbname=eco_farm;charset=utf8', 'root', '', [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 ]);
@@ -8,19 +9,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Rechercher l'utilisateur dans la base
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
-    $stmt->execute([':email' => $email]);
+    // Vérifier email ET mot de passe SHA2 directement dans la requête
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email AND password_hash = SHA2(:password, 256)");
+    $stmt->execute([
+        ':email' => $email,
+        ':password' => $password
+    ]);
+
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Vérifier le mot de passe
-    if ($user && password_verify($password, $user['password_hash'])) {
+    if ($user) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['role'] = $user['role'];
-        header("Location: ../index.php"); // Rediriger vers le tableau de bord
+        header("Location: ../index.php");
         exit;
     } else {
-        // Au lieu d'un echo inline, on stocke ce message d'erreur
         $errorMsg = "Identifiants incorrects. Veuillez réessayer.";
     }
 }
