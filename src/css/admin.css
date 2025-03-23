@@ -1,0 +1,130 @@
+/* admin.css */
+
+/* Reset de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Style général de la page */
+  body {
+    font-family: "Roboto", sans-serif;
+    background: #f5f5f5;
+    color: #333;
+    padding: 20px;
+  }
+  
+  /* Titre principal */
+  h1 {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    color: #4a4a4a;
+  }
+  
+  /* Titre secondaire */
+  h2 {
+    margin-bottom: 0.5rem;
+    color: #555;
+  }
+  
+  /* Liens */
+  a {
+    color: #673ab7; /* un violet par exemple */
+    text-decoration: none;
+    font-weight: 500;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Tableaux */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  /* En-têtes de colonnes */
+  th {
+    background: #f0f0f0;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  /* Dernière ligne de table (pas de border-bottom) */
+  table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  /* Bouton / lien en mode “action” */
+  .action-link {
+    color: #2196f3; /* bleu clair */
+    font-weight: 500;
+  }
+  .action-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Messages, paragraphes, etc. */
+  p {
+    margin-top: 1rem;
+    line-height: 1.4;
+  }
+  
+  /* Style du paragraphe de retour ou autres */
+  .return-link {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Conteneur général (facultatif) */
+  .admin-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  /* Encadré pour le formulaire de reset */
+  .reset-form {
+    margin-top: 1rem;
+    background: #fafafa;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+  }
+  .reset-form label {
+    display: block;
+    margin: 0.5rem 0 0.2rem;
+    font-weight: 500;
+    color: #555;
+  }
+  .reset-form input[type="password"] {
+    padding: 8px;
+    width: 100%;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .reset-form button {
+    background: #673ab7;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .reset-form button:hover {
+    background: #5e35b1;
+  }
+  

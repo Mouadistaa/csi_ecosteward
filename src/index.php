@@ -77,6 +77,29 @@ $stmt = $pdo->query("
 ");
 $ateliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$totalInscrits = 0;
+$totalCapacity = 0;
+foreach ($ateliers as $a) {
+    $totalInscrits += $a['nb_inscrits']; // nb_inscrits = COUNT(*) des participants
+    $totalCapacity += $a['capacity'];
+}
+
+$taux = 0;
+if ($totalCapacity > 0) {
+    $taux = round(($totalInscrits / $totalCapacity) * 100);
+}
+
+// Tendance des ventes (7 derniers jours)
+$stmt = $pdo->query("
+    SELECT DATE(sale_date) AS jour,
+           SUM(quantity * prix_unitaire) AS total_ventes
+    FROM sales
+    WHERE sale_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+    GROUP BY DATE(sale_date)
+    ORDER BY jour ASC
+");
+$tendance_ventes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 /* -------------------------------------------------------------------------
    2) Préparer des listes pour remplir les <select> (Nouvelle vente, etc.)
    ------------------------------------------------------------------------- */
@@ -173,6 +196,13 @@ if (!empty($ateliers)) {
         🎓 Ateliers
       </div>
 
+      <!-- Lien Admin visible uniquement si role=admin -->
+      <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+        <div class="nav-item" data-section="admin" tabindex="0" onclick="location.href='pages/admin_dashboard.php'">
+          🛠 Dashboard Admin
+        </div>
+      <?php endif; ?>
+
       <!-- Bouton de Déconnexion -->
       <div class="logout-container">
         <form action="pages/logout.php" method="POST">
@@ -204,10 +234,8 @@ if (!empty($ateliers)) {
           </div>
           <div class="card">
             <h3>Tendance des ventes (7 jours)</h3>
-            <p style="font-size: 0.9em; color: #666; margin-top: 0.3rem;">
-              (Placeholder dégradé)
-            </p>
-            <div class="mini-chart" aria-hidden="true"></div>
+            <!-- On affiche un canvas où le graphique sera dessiné -->
+            <canvas id="salesChart" width="400" height="150"></canvas>
           </div>
         </div>
 
@@ -216,7 +244,11 @@ if (!empty($ateliers)) {
           <div class="card">
             <h3>Répartition des produits</h3>
             <p style="font-size:0.9em; color:#555;">(par catégorie)</p>
-            <div class="pie-placeholder" aria-hidden="true"></div>
+            
+            <!-- Canvas pour le vrai camembert -->
+            <canvas id="pieChart" width="300" height="300"></canvas>
+            
+            <!-- On conserve la liste texte en dessous -->
             <ul style="margin-top: 0.5rem; font-size:0.9em;">
               <?php foreach ($categories as $cat): ?>
                 <li>
@@ -229,9 +261,14 @@ if (!empty($ateliers)) {
           <div class="card">
             <h3>Capacité Ateliers (Moyenne)</h3>
             <p style="font-size:0.9em; color:#555;">En cours / total places</p>
-            <div class="progress-ring" aria-hidden="true">
-              <div class="progress-center">75%</div>
-            </div>
+
+            <!-- Canvas pour l'anneau Chart.js -->
+            <canvas id="capacityChart" width="270" height="270"></canvas>
+            
+            <!-- Petit résumé texte (facultatif) -->
+            <p style="text-align:center; margin-top:0.5rem;">
+              <?= $taux ?>% (<?= $totalInscrits ?>/<?= $totalCapacity ?>)
+            </p>
           </div>
         </div>
 
@@ -559,5 +596,110 @@ if (!empty($ateliers)) {
 
   <!-- ===================== JS : NAVIGATION ===================== -->
   <script src="js/app.js"></script>
+  <script src="js/admin_buton.js"></script>
+  <!-- Chart.js depuis un CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    // Données PHP -> JS
+    const catData = <?= json_encode($categories) ?>;  
+    // catData ressemble à [{category:'Laitiers', nb:2}, {category:'Légumes', nb:2}, ...]
+
+    const catLabels = catData.map(item => item.category);
+    const catValues = catData.map(item => parseInt(item.nb, 10));
+
+    // Quand la page est prête
+    document.addEventListener('DOMContentLoaded', () => {
+      const ctxPie = document.getElementById('pieChart').getContext('2d');
+      
+      new Chart(ctxPie, {
+        type: 'pie',
+        data: {
+          labels: catLabels,
+          datasets: [{
+            data: catValues,
+            backgroundColor: [
+              '#388e3c', // vert foncé
+              '#66bb6a', // vert moyen
+              '#a5d6a7', // vert clair
+              '#c8e6c9', // encore plus clair...
+              '#ffd54f', // jaune
+              '#ff7043', // orange
+            ]
+          }]
+        },
+        options: {
+          responsive: false,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right'
+            }
+          }
+        }
+      });
+    });
+    </script>
+
+<script>
+// On passe les données PHP au JavaScript au format JSON
+const tendanceVentes = <?= json_encode($tendance_ventes) ?>;
+
+// On extrait deux tableaux JS : 
+// 1) labels (les dates), 2) dataValues (le total_ventes par jour)
+const labels = tendanceVentes.map(item => item.jour);
+const dataValues = tendanceVentes.map(item => parseFloat(item.total_ventes || 0));
+
+document.addEventListener('DOMContentLoaded', () => {
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar', // ou 'line'
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Ventes (EUR)',
+        data: dataValues,
+        backgroundColor: '#66bb6a'
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+  
+
+
+  // On récupère le taux en PHP
+  const tauxOccup = <?= $taux ?>;  // ex: 75
+  // On va créer un doughnut chart avec 2 valeurs : 
+  // 1) la part "occupée" (tauxOccup), 
+  // 2) la part "restante" (100 - tauxOccup)
+
+  const ctxDoughnut = document.getElementById('capacityChart').getContext('2d');
+  new Chart(ctxDoughnut, {
+    type: 'doughnut',
+    data: {
+      labels: ['Occupé', 'Libre'],
+      datasets: [{
+        data: [tauxOccup, 100 - tauxOccup],
+        backgroundColor: ['#388e3c', '#ddd']
+      }]
+    },
+    options: {
+      responsive: false,
+      maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: {
+          display: false
+        }
+      }
+    }
+  });
+});
+</script>
 </body>
 </html>

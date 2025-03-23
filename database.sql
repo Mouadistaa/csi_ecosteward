@@ -111,8 +111,8 @@ CREATE TABLE planning (
 -- 9.1) Quelques utilisateurs
 -- Admin par défaut
 INSERT INTO users (email, password_hash, role) VALUES 
-('admin@example.com', SHA2('admin123', 256), 'admin'),
-('marie.dupont@farmmail.com', SHA2('marie123', 256), 'woofer'),
+('mouad.sahraouidoukkali@farmmail.com', SHA2('admin123', 256), 'admin'),
+('aymane.benamar@farmmail.com', SHA2('aymane123', 256), 'woofer'),
 ('pierre.martin@farmmail.com', SHA2('pierre123', 256), 'woofer'),
 ('alice.marchand@farmmail.com', SHA2('alice123', 256), 'woofer');
 
@@ -140,8 +140,10 @@ VALUES
 INSERT INTO sales (user_id, product_id, quantity, sale_date, prix_unitaire)
 VALUES
 (1, 1, 10, '2025-03-10 09:15:00', 0.30),
-(2, 2,  2, '2025-03-10 10:00:00', 8.00),
-(2, 1,  6, '2025-03-10 11:00:00', 0.30);
+(2, 2, 2, '2025-03-22 10:00:00', 8.00),
+(2, 1, 6, '2025-03-21 11:00:00', 0.30),
+(1, 1, 5, '2025-03-23 14:20:00', 0.30),
+(1, 2, 1, '2025-03-23 15:00:00', 8.00);
 
 -- 9.6) Registrations (inscriptions aux ateliers)
 INSERT INTO registrations (workshop_id, participant_name, participant_email)
