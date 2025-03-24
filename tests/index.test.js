@@ -1,5 +1,5 @@
 const assert = require('assert');
-const mysql = require('mysql2/promise'); // ou `mariadb` si tu utilises MariaDB
+const mysql = require('mysql2/promise'); 
 
 describe('EcoSteward - Tests Fonctionnels de la base', () => {
   let conn;
@@ -8,8 +8,8 @@ describe('EcoSteward - Tests Fonctionnels de la base', () => {
     conn = await mysql.createConnection({
       host: 'localhost',
       user: 'root',
-      password: '', // change si nécessaire
-      database: 'eco_farm' // adapte à ta base
+      password: '', 
+      database: 'eco_farm' 
     });
   });
 
