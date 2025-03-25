@@ -129,7 +129,6 @@ INSERT INTO woofers (user_id, name, start_date, end_date, competencies)
 VALUES 
 (2, 'Marie Dupont',   '2025-03-01', '2025-03-31', 'Soins animaux, Vente'),
 (3, 'Pierre Martin',  '2025-04-01', '2025-04-15', 'Maraîchage, Accueil'),
-(4, 'Aymane Benamar', '2025-02-01', '2025-06-1', 'Soins animaux, Vente');
 
 -- 9.4) Workshops
 INSERT INTO workshops (title, workshop_date, animator_id, capacity)
@@ -145,7 +144,6 @@ VALUES
 (2, 1, 6, '2025-03-21 11:00:00', 0.30),
 (1, 1, 5, '2025-03-23 14:20:00', 0.30),
 (1, 2, 1, '2025-03-23 15:00:00', 8.00),
-(3, 2, 4, '2025-03-24 10:30:00', 5.00);
 
 -- 9.6) Registrations (inscriptions aux ateliers)
 INSERT INTO registrations (workshop_id, participant_name, participant_email)
@@ -162,5 +160,3 @@ VALUES
 (1, '2025-03-20', '14:00:00', '15:30:00', 'Atelier fromage', 'Formation'),
 (2, '2025-04-03', '08:00:00', '09:00:00', 'Préparation champs', 'Extérieur'),
 (2, '2025-04-03', '10:00:00', '12:00:00', 'Récolte carottes', 'Champs');
-(3, '2025-04-01', '09:30:00', '17:00:00', 'Préparation champs', 'Extérieur'),
-(3, '2025-04-02', '10:00:00', '16:00:00', 'Récolte carottes', 'Champs');
